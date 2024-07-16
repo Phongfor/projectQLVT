@@ -352,16 +352,16 @@ INSERT INTO ChiTietPhieuX (SoPhieuX, MaVT, SoLuongX, DonGiaX) VALUES
 
 -- Tìm các nhân viên lam cho kho số 7-Lê Hoàng Phong-12/07/2024
 CREATE VIEW vw_Timnhanvienkho7 AS
-SELECT [MaNV],[TenNV],[MaKho]
-FROM [dbo].[NhanVien]
-WHERE [MaKho] = 'K007'     
+SELECT MaNV,TenNV,MaKho
+FROM NhanVien
+WHERE MaKho= 'K007'     
 
 SELECT * FROM vw_Timnhanvienkho7
 
 -- Tìm các nhân viên có mức lương trên 20000000-Lê Hoàng Phong- 12/07/2024
 CREATE VIEW vw_nhanvienluongtren20000000 AS
 SELECT NV.TenNV,L.TenCV,FLOOR((L.LuongCB*L.HSL)) AS Luong
-FROM [dbo].[Luong] L JOIN [dbo].[NhanVien] NV ON
+FROM Luong L JOIN NhanVien NV ON
      L.MaCV=NV.MaCV
 
 SELECT * FROM vw_nhanvienluongtren20000000
@@ -369,7 +369,7 @@ SELECT * FROM vw_nhanvienluongtren20000000
 -- Cho biết các vật tư đã bán trong năm 2024-Lê Hoàng Phong- 15/07/2024
 CREATE VIEW vw_cacvattudabannam2024 AS
 SELECT VT.MaVT,VT.TenVT
-FROM [dbo].[PhieuXuat] PX,[dbo].[ChiTietPhieuX] CTPX,[dbo].[VatTu] VT
+FROM PhieuXuat PX,ChiTietPhieuX CTPX,VatTu VT
 WHERE PX.SoPhieuX=CTPX.SoPhieuX AND CTPX.MaVT=VT.MaVT AND
 	  YEAR(PX.NgayXuat) = 2024
 
@@ -379,7 +379,7 @@ SELECT * FROM vw_cacvattudabannam2024
 
 CREATE VIEW vw_thongtinnguoinhan AS
 SELECT NN.MaNN,NN.TenNN,NN.SDT
-FROM [dbo].[PhieuXuat] PX JOIN [dbo].[NguoiNhan] NN ON
+FROM PhieuXuat PX JOIN NguoiNhan]NN ON
 	 PX.MaNN=NN.MaNN
 WHERE PX.SoPhieuX='PX008'
 
@@ -391,10 +391,10 @@ CREATE VIEW vw_soluongnhapkho AS
 SELECT NCC.MaNCC,NCC.TenNCC,
 	   SUM(CTPN.SoLuongN) AS Tongsoluong,
 	   MONTH(PN.NgayNhap) AS Thang 
-FROM [dbo].[NhaCungCap] NCC 
-	 JOIN [dbo].[NguoiGiao] NG ON NCC.MaNCC= NG.MaNCC
-	 JOIN [dbo].[PhieuNhap] PN ON PN.MaNG = NG.MaNG
-	 JOIN [dbo].[ChiTietPhieuN] CTPN ON CTPN.SoPhieuN=PN.SoPhieuN
+FROM NhaCungCap NCC 
+	 JOIN NguoiGiao NG ON NCC.MaNCC= NG.MaNCC
+	 JOIN PhieuNhap PN ON PN.MaNG = NG.MaNG
+	 JOIN ChiTietPhieuN CTPN ON CTPN.SoPhieuN=PN.SoPhieuN
 GROUP BY NCC.MaNCC,NCC.TenNCC,MONTH(PN.NgayNhap) 
 
 SELECT * FROM vw_soluongnhapkho
@@ -403,7 +403,7 @@ SELECT * FROM vw_soluongnhapkho
 
 ALTER VIEW vw_Tonkhovattu AS
 SELECT VT.MaVT,VT.TenVT,SUM(TK.SoLuongTon) AS Ton_Kho,TK.MaKho
-FROM [dbo].[TonKho] TK JOIN [dbo].[VatTu] VT ON
+FROM TonKho TK JOIN VatTu VT ON
 	 TK.MaVT=VT.MaVT
 GROUP BY VT.MaVT,VT.TenVT,TK.MaKho
 
@@ -495,3 +495,154 @@ GROUP BY
 
 SELECT * FROM vw_GiaTrungBinhVatTuTheoNam
 
+--TRIGGER
+-- Thông báo khi có dữ liệu được nhập vào bản vật tư-Lê Hoàng Phong-16/07/2024
+
+CREATE TRIGGER tr_Vattu_thongbao
+ON [dbo].[VatTu]
+FOR INSERT,UPDATE
+AS
+	RAISERROR(N'Bạn đang thêm dữ liệu', 16, 10)
+
+-- Kiểm soát trường giới tính của nhân viên chỉ nhận Nam hoặc Nữ-Lê Hoàng Phong-16/07/2024
+
+CREATE TRIGGER tr_Nhanvien_Gioitinh
+ON [dbo].[NhanVien]
+FOR INSERT,UPDATE
+AS
+	BEGIN
+		DECLARE @GT CHAR(10)
+		SELECT @GT=GioiTinh FROM [dbo].[NhanVien]
+		IF(@GT NOT IN ('Nam','Nu'))
+			BEGIN
+				PRINT(N'Dữ liệu không hợp lệ')
+				ROLLBACK TRAN
+			END
+	END
+
+
+-- đồng bộ số lượng tồn kho khi nhập-Lê Hoàng Phong-16/07/2024
+
+CREATE TRIGGER tr_CTPhieunhap_Soluong
+ON [dbo].[ChiTietPhieuN]
+FOR INSERT
+AS
+	BEGIN
+		
+		DECLARE @Soluong INT
+		DECLARE @Mavt CHAR(10)
+		DECLARE @NgayThang DATE
+
+		SELECT @Soluong=SoLuongN, @Mavt=MaVT,@NgayThang=PN.NgayNhap
+		FROM inserted I 
+			 JOIN [dbo].[PhieuNhap] PN ON I.SoPhieuN=PN.SoPhieuN
+
+		UPDATE [dbo].[TonKho]
+		SET [SoLuongTon]+=@Soluong
+		WHERE MaVT =@Mavt AND NamThang=@NgayThang
+
+	END
+
+INSERT INTO [dbo].[ChiTietPhieuN] ([SoPhieuN],[MaVT],[SoLuongN],[DonGiaN]) 
+VALUES ('PN012','VT002',77,500000)
+
+--đồng bộ số lượng tồn kho khi xuất-Lê Hoàng Phong-16/07/2024
+
+CREATE TRIGGER tr_CTPhieuxuat_Soluong
+ON [dbo].[ChiTietPhieuX]
+FOR INSERT
+AS
+	BEGIN
+		
+		DECLARE @Soluong INT
+		DECLARE @Mavt CHAR(10)
+		DECLARE @NgayThang DATE
+
+		SELECT @Soluong=I.SoLuongX, @Mavt=I.MaVT,@NgayThang=PX.NgayXuat
+		FROM inserted I 
+			 JOIN [dbo].[PhieuXuat] PX ON I.SoPhieuX=PX.SoPhieuX
+
+		UPDATE [dbo].[TonKho]
+		SET [SoLuongTon]-=@Soluong
+		WHERE MaVT =@Mavt AND NamThang=@NgayThang
+
+	END
+
+INSERT INTO [dbo].[ChiTietPhieuX] (SoPhieuX,MaVT,SoLuongX,DonGiaX)
+VALUES('PX012','VT002',34,546000)
+
+-- kiểm tra cập nhật mã nhân viên trong bảng phiếu nhập-Lê Hoàng Phong-16/07/2024
+
+CREATE TRIGGER trg_Phieunhap_Manv
+ON [dbo].[PhieuNhap]
+FOR UPDATE
+AS
+BEGIN
+    IF UPDATE(MaNV)
+    BEGIN
+        DECLARE @MaNV CHAR(10)
+        SELECT @MaNV = inserted.MaNV FROM inserted
+        IF NOT EXISTS (SELECT 1 FROM [dbo].[NhanVien] WHERE MaNV = @MaNV)
+        BEGIN
+            RAISERROR('Mã nhân viên không tồn tại', 16, 1)
+            ROLLBACK TRANSACTION
+        END
+    END
+END
+
+--kiểm tra cập nhật mã nhân viên trong bảng phiếu xuất-Lê Hoàng Phong-16/07/2024
+
+CREATE TRIGGER trg_Phieuxuat_Manv
+ON [dbo].[PhieuXuat]
+FOR UPDATE
+AS
+BEGIN
+    IF UPDATE(MaNV)
+    BEGIN
+        DECLARE @MaNV CHAR(10)
+        SELECT @MaNV = inserted.MaNV FROM inserted
+        IF NOT EXISTS (SELECT 1 FROM [dbo].[NhanVien] WHERE MaNV = @MaNV)
+        BEGIN
+            RAISERROR('Mã nhân viên không tồn tại', 16, 1)
+            ROLLBACK TRANSACTION
+        END
+    END
+END
+
+--Xóa một NV thì xóa các phân công tương ứng-Lê Hoàng Phong-16/07/2024
+
+ALTER TRIGGER tr_Nhanvien_Xoanv
+ON [dbo].[NhanVien]
+AFTER DELETE
+AS
+BEGIN
+    DECLARE @Manv CHAR(10)
+	DECLARE @MaPhieuN CHAR(10)
+	DECLARE @MaPhieuX CHAR(10)
+
+	SELECT @Manv = D.MaNV FROM deleted D
+	
+	SELECT @MaPhieuN=CTPN.SoPhieuN 
+	FROM [dbo].[PhieuNhap] PN,[dbo].[ChiTietPhieuN] CTPN 
+	WHERE MaNV=@Manv AND PN.SoPhieuN=CTPN.SoPhieuN
+
+	SELECT @MaPhieuX=PX.SoPhieuX
+	FROM [dbo].[PhieuXuat] PX,[dbo].[ChiTietPhieuX] CTPX
+	WHERE MaNV=@Manv AND PX.SoPhieuX=CTPX.SoPhieuX
+    
+    IF(EXISTS (SELECT * FROM [dbo].[PhieuNhap] PN WHERE SoPhieuN=@MaPhieuN) )
+		BEGIN
+			DELETE FROM [dbo].[ChiTietPhieuN] WHERE SoPhieuN=@MaPhieuN
+			DELETE FROM [dbo].[PhieuNhap]  WHERE SoPhieuN=@MaPhieuN		 
+		END
+
+	IF EXISTS( (SELECT * FROM [dbo].[PhieuXuat]  WHERE SoPhieuX=@MaPhieuX))
+		BEGIN
+			DELETE FROM [dbo].[ChiTietPhieuX] WHERE SoPhieuX=@MaPhieuX
+			DELETE FROM [dbo].[PhieuXuat] WHERE SoPhieuX=@MaPhieux	
+		END
+
+END
+
+DELETE FROM [dbo].[PhieuNhap]
+WHERE MaNV='NV005'
