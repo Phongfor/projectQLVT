@@ -609,11 +609,48 @@ BEGIN
     END
 END
 
+--Không cho phép sửa cột giới tính-Lê Hoàng Phong-16/07/2024
+
+CREATE TRIGGER tr_Nhanvien_suagioitinh
+ON [dbo].[NhanVien]
+FOR UPDATE
+AS
+	BEGIN
+		IF(UPDATE(GioiTinh))
+			BEGIN
+				PRINT(N'Không thể sửa giới tính')
+				ROLLBACK TRAN
+			END
+	END
+
+UPDATE [dbo].[NhanVien]
+SET GioiTinh ='Nu'
+WHERE MaNV ='NV001'
+
+-- Không cho phép sửa MaNV-Lê Hoàng Phong-16/07/2024
+
+CREATE TRIGGER tr_Nhanvien_suamanv
+ON [dbo].[NhanVien]
+FOR UPDATE
+AS
+	BEGIN
+		IF(UPDATE(Manv))
+			BEGIN
+				PRINT(N'Không thể sửa mã nhân viên')
+				ROLLBACK TRAN
+			END
+	END
+
+UPDATE [dbo].[NhanVien]
+SET MaNV='NV013'
+WHERE MaNV='NV012'
+
+
 --Xóa một NV thì xóa các phân công tương ứng-Lê Hoàng Phong-16/07/2024
 
-ALTER TRIGGER tr_Nhanvien_Xoanv
+CREATE TRIGGER tr_Nhanvien_Xoanv
 ON [dbo].[NhanVien]
-AFTER DELETE
+INSTEAD OF DELETE
 AS
 BEGIN
     DECLARE @Manv CHAR(10)
@@ -622,6 +659,7 @@ BEGIN
 
 	SELECT @Manv = D.MaNV FROM deleted D
 	
+	
 	SELECT @MaPhieuN=CTPN.SoPhieuN 
 	FROM [dbo].[PhieuNhap] PN,[dbo].[ChiTietPhieuN] CTPN 
 	WHERE MaNV=@Manv AND PN.SoPhieuN=CTPN.SoPhieuN
@@ -629,6 +667,11 @@ BEGIN
 	SELECT @MaPhieuX=PX.SoPhieuX
 	FROM [dbo].[PhieuXuat] PX,[dbo].[ChiTietPhieuX] CTPX
 	WHERE MaNV=@Manv AND PX.SoPhieuX=CTPX.SoPhieuX
+
+	IF EXISTS(SELECT * FROM [dbo].[NhanVien_SDT] WHERE MaNV=@Manv)
+		BEGIN
+			DELETE FROM [dbo].[NhanVien_SDT] WHERE MaNV=@Manv
+		END
     
     IF(EXISTS (SELECT * FROM [dbo].[PhieuNhap] PN WHERE SoPhieuN=@MaPhieuN) )
 		BEGIN
@@ -641,8 +684,26 @@ BEGIN
 			DELETE FROM [dbo].[ChiTietPhieuX] WHERE SoPhieuX=@MaPhieuX
 			DELETE FROM [dbo].[PhieuXuat] WHERE SoPhieuX=@MaPhieux	
 		END
-
 END
 
-DELETE FROM [dbo].[PhieuNhap]
+DELETE FROM [dbo].[NhanVien]
 WHERE MaNV='NV005'
+
+-- Tự đông cập nhật ngày vào làm cho nhân viên mới-Lê Hoàng Phong-16/07/2024
+
+CREATE TRIGGER tr_Nhanvien_ngayvaolam
+ON [dbo].[NhanVien]
+INSTEAD OF INSERT
+AS
+	BEGIN
+		INSERT INTO [dbo].[NhanVien] (MaNV, TenNV, GioiTinh, DiaChi, Ngayvaolam, MaCV, MaKho)
+		SELECT MaNV, TenNV, GioiTinh, DiaChi, GETDATE(), MaCV, MaKho FROM inserted
+	END
+
+INSERT INTO [dbo].[NhanVien] (MaNV, TenNV, GioiTinh, DiaChi, MaCV, MaKho)
+VALUES('NV012','Bui Chi N','Nam','Ha Noi','CV010','K004')
+
+
+
+
+
