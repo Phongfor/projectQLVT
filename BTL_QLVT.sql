@@ -704,6 +704,677 @@ INSERT INTO [dbo].[NhanVien] (MaNV, TenNV, GioiTinh, DiaChi, MaCV, MaKho)
 VALUES('NV012','Bui Chi N','Nam','Ha Noi','CV010','K004')
 
 
+--Người viết : Bùi Chí Nhật
+--Ngày viết : 22/7/2024
+--Thêm loại vật tư 
+CREATE PROCEDURE ThemLoaiVatTu
+    @MaLoaiVT CHAR(10),
+    @TenLoaiVT NVARCHAR(50)
+AS
+BEGIN
+    INSERT INTO LoaiVatTu ([MaLoaiVT],[LoaiVT])
+    VALUES (@MaLoaiVT, @TenLoaiVT)
+END
+
+
+
+--Người viết : Bùi Chí Nhật
+--Ngày viết : 22/7/2024
+--Sửa loại vật tư 
+CREATE PROCEDURE SuaLoaiVatTu
+    @MaLoaiVT CHAR(10),
+    @TenLoaiVT NVARCHAR(50),
+    @MoTa NVARCHAR(50)
+AS
+BEGIN
+    UPDATE [dbo].[LoaiVatTu]
+    SET [MaLoaiVT] = @MaLoaiVT ,
+        [LoaiVT] = @TenLoaiVT ,
+        [Mota] = @MoTa 
+    WHERE [MaLoaiVT] = @MaLoaiVT 
+END
+
+
+
+--Người viết : Bùi Chí Nhật
+--Ngày viết : 22/7/2024
+--Xóa loại vật tư 
+CREATE PROCEDURE XoaLoaiVatTu
+    @MaLoaiVT CHAR(10)
+AS
+BEGIN
+    DELETE 
+    FROM LoaiVatTu 
+    WHERE MaLoaiVT = @MaLoaiVT
+END
+
+
+
+--Người viết : Bùi Chí Nhật
+--Ngày viết : 22/7/2024
+--Lấy thông tin loại vật tư 
+CREATE PROCEDURE LayThongTinLoaiVatTu 
+    @MaLoaiVT CHAR(10) 
+AS 
+BEGIN 
+    SELECT * 
+    FROM [dbo].[LoaiVatTu]
+    WHERE [MaLoaiVT] = @MaLoaiVT 
+END 
+
+
+--Người viết : Bùi Chí Nhật
+--Ngày viết : 22/7/2024
+--Thêm vật tư 
+CREATE PROCEDURE ThemVatTu
+    @MaVT CHAR(10),
+    @TenVT NVARCHAR(50),
+    @DonViTinh NVARCHAR(12),
+    @MaLoaiVT CHAR(10)
+AS
+BEGIN
+    INSERT INTO VatTu (MaVT, TenVT, DonViTinh, MaLoaiVT)
+    VALUES (@MaVT, @TenVT, @DonViTinh, @MaLoaiVT);
+END
+
+
+--Người viết : Bùi Chí Nhật
+--Ngày viết : 22/7/2024
+--Sửa vật tư 
+CREATE PROCEDURE SuaVatTu
+    @MaVT CHAR(10),
+    @TenVT NVARCHAR(50),
+    @DonViTinh NVARCHAR(12),
+    @SoLuong INT ,
+    @MaLoaiVT CHAR(10)
+AS
+BEGIN
+    UPDATE VatTu
+    SET TenVT = @TenVT, DonViTinh = @DonViTinh , SoLuong = @SoLuong  , MaLoaiVT = @MaLoaiVT
+    WHERE MaVT = @MaVT;
+END
+
+
+--Người viết : Bùi Chí Nhật
+--Ngày viết : 22/7/2024
+--Xóa vật tư 
+CREATE PROCEDURE XoaVatTu
+    @MaVT CHAR(10)
+AS
+BEGIN
+    DELETE 
+    FROM VatTu
+    WHERE MaVT = @MaVT;
+END
+
+
+
+--Người viết : Bùi Chí Nhật
+--Ngày viết : 22/7/2024
+--Lấy thông tin vật tư 
+CREATE PROCEDURE LayVatTu
+    @MaVT CHAR(10)
+AS
+BEGIN
+    SELECT * FROM VatTu
+    WHERE MaVT = @MaVT;
+END
+
+
+--Người viết : Bùi Chí Nhật
+--Ngày viết : 22/7/2024
+--Thêm lương
+CREATE PROCEDURE ThemLuong
+    @MaCV CHAR(10),
+    @TenCV NVARCHAR(50),
+    @HSL DECIMAL,
+    @LuongCB FLOAT = 5000000
+AS
+BEGIN
+    INSERT INTO Luong (MaCV, TenCV, HSL, LuongCB)
+    VALUES (@MaCV, @TenCV, @HSL, @LuongCB);
+END
+
+
+--Người viết : Bùi Chí Nhật
+--Ngày viết : 22/7/2024
+--Sửa lương
+CREATE PROCEDURE SuaLuong
+    @MaCV CHAR(10),
+    @TenCV NVARCHAR(50),
+    @HSL DECIMAL,
+    @LuongCB FLOAT = 5000000
+AS
+BEGIN
+    UPDATE Luong
+    SET TenCV = @TenCV, HSL = @HSL, LuongCB = @LuongCB
+    WHERE MaCV = @MaCV;
+END
+
+--Người viết : Bùi Chí Nhật
+--Ngày viết : 22/7/2024
+--Xóa lương
+CREATE PROCEDURE XoaLuong
+    @MaCV CHAR(10)
+AS
+BEGIN 
+    DELETE 
+    FROM [dbo].[Luong]
+    WHERE [MaCV] = @MaCV 
+END
+
+--Người viết : Bùi Chí Nhật
+--Ngày viết : 22/7/2024
+--Lấy thông tin lương
+CREATE PROCEDURE LayThongTinLuong
+    @MaCV CHAR(10)
+AS
+BEGIN
+    SELECT *
+    FROM [dbo].[Luong]
+    WHERE MaCV = @MaCV 
+END
+
+
+--Người viết : Bùi Chí Nhật
+--Ngày viết : 22/7/2024
+--Thêm nhân viên
+CREATE PROCEDURE ThemNhanVien
+    @MaNV CHAR(10),
+    @TenNV NVARCHAR(50),
+    @GioiTinh CHAR(3),
+    @DiaChi NVARCHAR(70),
+    @NgayVaoLam DATE,
+    @MaCV CHAR(10),
+    @MaKho CHAR(10)
+AS
+BEGIN
+    INSERT INTO NhanVien (MaNV, TenNV, GioiTinh, DiaChi, NgayVaoLam, MaCV ,MaKho)
+    VALUES (@MaNV, @TenNV, @GioiTinh, @DiaChi, @NgayVaoLam, @MaCV,@MaKho)
+END
+
+
+--Người viết : Bùi Chí Nhật
+--Ngày viết : 22/7/2024
+--Sửa thông tin nhân viên
+CREATE PROCEDURE SuaNhanVien
+    @MaNV CHAR(10),
+    @TenNV NVARCHAR(50),
+    @GioiTinh CHAR(3),
+    @DiaChi NVARCHAR(70),
+    @NgayVaoLam DATE,
+    @MaCV CHAR(10),
+    @MaKho CHAR(10)
+AS
+BEGIN 
+    UPDATE [dbo].[NhanVien]
+    SET [TenNV] =  @TenNV , [GioiTinh] = @GioiTinh , [DiaChi] = @DiaChi , [Ngayvaolam] = @NgayVaoLam , [MaCV] = @MaCV , [MaKho] = @MaKho 
+    WHERE [MaNV] =  @MaNV 
+END
+
+
+--Người viết : Bùi Chí Nhật
+--Ngày viết : 22/7/2024
+--Xóa nhân viên
+CREATE PROCEDURE XoaNhanVien
+    @MaNV CHAR(10)
+AS
+BEGIN
+    DELETE FROM NhanVien
+    WHERE MaNV = @MaNV
+END
+
+
+--Người viết : Bùi Chí Nhật
+--Ngày viết : 22/7/2024
+--Thêm nhân viên - SDT 
+CREATE PROCEDURE ThemNV_SDT
+    @MaNV CHAR(10),
+    @SDT Char(15)
+AS
+BEGIN 
+    INSERT INTO NhanVien_SDT (MaNV,SDT)
+    VALUES(@MaNV,@SDT)
+END
+
+
+--Người viết : Bùi Chí Nhật
+--Ngày viết : 22/7/2024
+--Sửa nhân viên - SDT 
+CREATE PROCEDURE SuaNV_SDT
+    @MaNV CHAR(10),
+    @SDT Char(15)
+AS
+BEGIN 
+    UPDATE [dbo].[NhanVien_SDT]
+    SET SDT = @SDT 
+    WHERE MaNV = @MaNV 
+END
+
+
+--Người viết : Bùi Chí Nhật
+--Ngày viết : 22/7/2024
+--Lấy thông tin nhân viên - SDT 
+CREATE PROCEDURE LayTTNV_SDT
+    @MaNV CHAR(10)
+AS
+BEGIN
+    SELECT * FROM [dbo].[NhanVien_SDT]
+    WHERE MaNV = @MaNV
+END
+
+
+--Người viết : Bùi Chí Nhật
+--Ngày viết : 22/7/2024
+--Xóa nhân viên - SDT 
+CREATE PROCEDURE XoaNV_SDT
+    @MaNV CHAR(10)
+AS
+BEGIN 
+    DELETE FROM NhanVien_SDT
+    WHERE MaNV = @MaNV
+END
+
+--Người viết : Bùi Chí Nhật
+--Ngày viết : 24/7/2024
+--Thêm dữ liệu kho
+CREATE PROCEDURE ThemKho
+    @MaKho Char(10) ,
+    @TenKho NVARCHAR(100),
+    @DiaDiem NVARCHAR(200)
+AS
+BEGIN
+    INSERT INTO KHO([MaKho],[TenKho],[DiaDiem])
+    VALUES(@MaKho,@TenKho,@DiaDiem)
+END
+
+--Người viết : Bùi Chí Nhật
+--Ngày viết : 24/7/2024
+--Sửa dữ liệu kho
+CREATE PROCEDURE SuaKho
+    @MaKho CHAR(10),
+    @TenKho NVARCHAR(100),
+    @DiaDiem NVARCHAR(200)
+AS
+BEGIN
+    UPDATE KHO
+    SET MaKho = @MaKho, TenKho = @TenKho, DiaDiem =@DiaDiem 
+    WHERE MaKho = @MaKho
+END
+
+--Người viết : Bùi Chí Nhật
+--Ngày viết : 24/7/2024
+--Xóa dữ liệu kho
+CREATE PROCEDURE XoaKho
+    @MaKho CHAR(10)
+AS
+BEGIN
+    DELETE FROM KHO
+    WHERE MaKho = @MaKho
+END
+
+
+--Người viết : Bùi Chí Nhật
+--Ngày viết : 24/7/2024
+--Lấy dữ liệu kho
+CREATE PROCEDURE LayTTKho
+    @MaKho CHAR(10)
+AS
+BEGIN
+    SELECT * 
+    FROM KHO
+    WHERE MaKho = @MaKho;
+END
+
+
+--Người viết : Bùi Chí Nhật
+--Ngày viết : 24/7/2024
+--Thêm dữ liệu tồn kho
+CREATE PROCEDURE ThemTonKho
+    @MaVT CHAR(10),
+    @NamThang DATE,
+    @SoLuongTon INT,
+    @MaKho CHAR(10)
+AS
+BEGIN
+    INSERT INTO TonKho ([MaVT],[NamThang],[SoLuongTon],[MaKho])
+    VALUES (@MaVT, @NamThang, @SoLuongTon,@MaKho)
+END
+
+
+--Người viết : Bùi Chí Nhật
+--Ngày viết : 24/7/2024
+--Sửa dữ liệu tồn kho
+CREATE PROCEDURE SuaTonKho
+    @MaVT CHAR(10),
+    @NamThang DATE,
+    @SoLuongTon INT,
+    @MaKho CHAR(10)
+AS
+BEGIN
+    UPDATE TonKho
+    SET SoLuongTon = @SoLuongTon , [NamThang] = @NamThang , [MaKho] = @MaKho 
+    WHERE MaKho = @MaKho AND MaVT = @MaVT;
+END
+
+
+--Người viết : Bùi Chí Nhật
+--Ngày viết : 24/7/2024
+--Xóa dữ liệu tồn kho
+CREATE PROCEDURE XoaTonKho
+    @MaKho CHAR(10),
+    @MaVT CHAR(10)
+AS
+BEGIN
+    DELETE FROM TonKho
+    WHERE MaKho = @MaKho AND MaVT = @MaVT;
+END
+
+
+
+--Người viết : Bùi Chí Nhật
+--Ngày viết : 24/7/2024
+--Lấy dữ liệu tồn kho
+CREATE PROCEDURE LayTTTonKho
+    @MaKho CHAR(10),
+    @MaVT CHAR(10)
+AS
+BEGIN
+    SELECT * FROM TonKho
+    WHERE MaKho = @MaKho AND MaVT = @MaVT;
+END
+
+
+--Người viết : Bùi Chí Nhật
+--Ngày viết : 24/7/2024
+--Thêm dữ liệu nhà cung cấp
+CREATE PROCEDURE ThemNhaCungCap
+    @MaNCC CHAR(10),
+    @TenNCC NVARCHAR(50),
+    @DiaChi NVARCHAR(70),
+    @SDT CHAR(12)
+AS
+BEGIN
+    INSERT INTO NhaCungCap (MaNCC, TenNCC, SDT, DiaChi)
+    VALUES (@MaNCC, @TenNCC, @SDT, @DiaChi)
+END
+
+
+--Người viết : Bùi Chí Nhật
+--Ngày viết : 24/7/2024
+--Sửa dữ liệu nhà cung cấp
+CREATE PROCEDURE SuaNhaCungCap
+    @MaNCC CHAR(10),
+    @TenNCC NVARCHAR(50),
+    @DiaChi NVARCHAR(70),
+    @SDT CHAR(12)
+AS
+BEGIN
+    UPDATE NhaCungCap
+    SET  [TenNCC] = @TenNCC,[DiaChi] =@DiaChi , [SDT] = @SDT
+    WHERE [MaNCC] = @MaNCC 
+END
+
+
+--Người viết : Bùi Chí Nhật
+--Ngày viết : 24/7/2024
+--Xóa dữ liệu nhà cung cấp
+CREATE PROCEDURE XoaNhaCungCap
+    @MaNCC CHAR(10)
+AS
+BEGIN 
+    DELETE
+    FROM NhaCungCap
+    WHERE [MaNCC] = @MaNCC 
+END
+
+
+--Người viết : Bùi Chí Nhật
+--Ngày viết : 24/7/2024
+--Lấy dữ liệu nhà cung cấp
+CREATE PROCEDURE LayTTNhaCungCap
+    @MaNCC CHAR(10)
+AS
+BEGIN
+    SELECT * FROM NhaCungCap
+    WHERE MaNCC = @MaNCC
+END
+
+
+--Người viết : Bùi Chí Nhật
+--Ngày viết : 24/7/2024
+--Lấy dữ liệu phiếu nhập
+CREATE PROCEDURE ThemPhieuNhap
+    @SoPhieuN CHAR(10),
+    @NgayNhap DATE,
+    @MaNG CHAR(10),
+    @MaNV CHAR(10),
+    @MaKho CHAR(10)
+AS
+BEGIN
+    INSERT INTO PhieuNhap (SoPhieuN, NgayNhap, MaNG, MaNV, MaKho)
+    VALUES (@SoPhieuN, @NgayNhap, @MaNG, @MaNV, @MaKho)
+END
+
+
+--Người viết : Bùi Chí Nhật
+--Ngày viết : 24/7/2024
+--Sửa dữ liệu phiếu nhập
+CREATE PROCEDURE CapNhatPhieuNhap
+    @SoPhieuN CHAR(10),
+    @NgayNhap DATE,
+    @MaNG CHAR(10),
+    @MaNV CHAR(10),
+    @MaKho CHAR(10)
+AS
+BEGIN
+    UPDATE PhieuNhap
+    SET NgayNhap = @NgayNhap,
+        MaNG = @MaNG,
+        MaNV = @MaNV,
+        MaKho = @MaKho
+    WHERE SoPhieuN = @SoPhieuN
+END
+
+
+--Người viết : Bùi Chí Nhật
+--Ngày viết : 24/7/2024
+--Xóa dữ liệu phiếu nhập
+CREATE PROCEDURE XoaPhieuNhap
+    @SoPhieuN CHAR(10)
+AS
+BEGIN
+    DELETE FROM PhieuNhap
+    WHERE SoPhieuN = @SoPhieuN
+END
+
+
+--Người viết : Bùi Chí Nhật
+--Ngày viết : 24/7/2024
+--Lấy dữ liệu phiếu nhập
+CREATE PROCEDURE LayThongTinPhieuNhap
+    @SoPhieuN CHAR(10)
+AS
+BEGIN
+    SELECT * FROM PhieuNhap
+    WHERE SoPhieuN = @SoPhieuN
+END
+
+
+--Người viết : Bùi Chí Nhật
+--Ngày viết : 24/7/2024
+--Thêm dữ liệu CT phiếu nhập
+CREATE PROCEDURE ThemChiTietPhieuN
+    @SoPhieuN CHAR(10),
+    @MaVT CHAR(10),
+    @SoLuongN INT,
+    @DonGiaN DECIMAL(18, 2)
+AS
+BEGIN
+    INSERT INTO ChiTietPhieuN (SoPhieuN, MaVT, SoLuongN, DonGiaN)
+    VALUES (@SoPhieuN, @MaVT, @SoLuongN, @DonGiaN)
+END
+
+
+--Người viết : Bùi Chí Nhật
+--Ngày viết : 24/7/2024
+--Sửa dữ liệu CT phiếu nhập
+CREATE PROCEDURE SuaChiTietPhieuN
+    @SoPhieuN CHAR(10),
+    @MaVT CHAR(10),
+    @SoLuongN INT,
+    @DonGiaN DECIMAL(18, 2)
+AS
+BEGIN
+    UPDATE ChiTietPhieuN
+    SET MaVT = @MaVT,
+        SoLuongN = @SoLuongN,
+        DonGiaN = @DonGiaN
+    WHERE SoPhieuN = @SoPhieuN
+END
+
+
+--Người viết : Bùi Chí Nhật
+--Ngày viết : 24/7/2024
+--Xóa dữ liệu CT phiếu nhập
+CREATE PROCEDURE XoaChiTietPhieuN
+    @SoPhieuN CHAR(10)
+AS
+BEGIN
+    DELETE FROM ChiTietPhieuN
+    WHERE SoPhieuN = @SoPhieuN
+END
+
+
+--Người viết : Bùi Chí Nhật
+--Ngày viết : 24/7/2024
+--Lấy dữ liệu CT phiếu nhập
+CREATE PROCEDURE LayThongTinChiTietPhieuN
+    @SoPhieuN CHAR(10)
+AS
+BEGIN
+    SELECT * FROM ChiTietPhieuN
+    WHERE SoPhieuN = @SoPhieuN
+END
+
+
+--Người viết : Bùi Chí Nhật
+--Ngày viết : 24/7/2024
+--Thêm dữ liệu phiếu xuất
+CREATE PROCEDURE ThemPhieuXuat
+    @SoPhieuX CHAR(10),
+    @NgayXuat DATE,
+    @MaNN CHAR(10),
+    @MaNV CHAR(10),
+    @MaKho CHAR(10)
+AS
+BEGIN
+    INSERT INTO PhieuXuat (SoPhieuX, NgayXuat, MaNN, MaNV, MaKho)
+    VALUES (@SoPhieuX, @NgayXuat, @MaNN, @MaNV, @MaKho)
+END
+
+
+--Người viết : Bùi Chí Nhật
+--Ngày viết : 24/7/2024
+--Sửa dữ liệu phiếu xuất
+CREATE PROCEDURE SuaPhieuXuat
+    @SoPhieuX CHAR(10),
+    @NgayXuat DATE,
+    @MaNN CHAR(10),
+    @MaNV CHAR(10),
+    @MaKho CHAR(10)
+AS
+BEGIN
+    UPDATE PhieuXuat
+    SET NgayXuat = @NgayXuat,
+        MaNN = @MaNN,
+        MaNV = @MaNV,
+        MaKho = @MaKho
+    WHERE SoPhieuX = @SoPhieuX
+END
+
+
+--Người viết : Bùi Chí Nhật
+--Ngày viết : 24/7/2024
+--Xóa dữ liệu phiếu xuất
+CREATE PROCEDURE XoaPhieuXuat
+    @SoPhieuX CHAR(10)
+AS
+BEGIN
+    DELETE FROM PhieuXuat
+    WHERE SoPhieuX = @SoPhieuX;
+END
+
+
+--Người viết : Bùi Chí Nhật
+--Ngày viết : 24/7/2024
+--Lấy dữ liệu phiếu xuất
+CREATE PROCEDURE LayThongTinPhieuXuat
+    @SoPhieuX CHAR(10)
+AS
+BEGIN
+    SELECT * FROM PhieuXuat
+    WHERE SoPhieuX = @SoPhieuX;
+END
+
+
+--Người viết : Bùi Chí Nhật
+--Ngày viết : 24/7/2024
+--Thêm dữ liệu CT phiếu xuất
+CREATE PROCEDURE ThemChiTietPhieuX
+    @SoPhieuX CHAR(10),
+    @MaVT CHAR(10),
+    @SoLuongX INT,
+    @DonGiaX DECIMAL(18, 2)
+AS
+BEGIN
+    INSERT INTO ChiTietPhieuX (SoPhieuX, MaVT, SoLuongX, DonGiaX)
+    VALUES (@SoPhieuX, @MaVT, @SoLuongX, @DonGiaX)
+END
+
+
+--Người viết : Bùi Chí Nhật
+--Ngày viết : 24/7/2024
+--Sửa dữ liệu phiếu xuất
+CREATE PROCEDURE SuaChiTietPhieuX
+    @SoPhieuX CHAR(10),
+    @MaVT CHAR(10),
+    @SoLuongX INT,
+    @DonGiaX DECIMAL(18, 2)
+AS
+BEGIN
+    UPDATE ChiTietPhieuX
+    SET MaVT = @MaVT,
+        SoLuongX = @SoLuongX,
+        DonGiaX = @DonGiaX
+    WHERE SoPhieuX = @SoPhieuX
+END
+
+
+--Người viết : Bùi Chí Nhật
+--Ngày viết : 24/7/2024
+--Xóa dữ liệu CT phiếu xuất
+CREATE PROCEDURE XoaChiTietPhieuX
+    @SoPhieuX CHAR(10)
+AS
+BEGIN
+    DELETE FROM ChiTietPhieuX
+    WHERE SoPhieuX = @SoPhieuX
+END
+
+
+
+--Người viết : Bùi Chí Nhật
+--Ngày viết : 24/7/2024
+--Lấy dữ liệu CT phiếu xuất
+CREATE PROCEDURE LayThongTinChiTietPhieuX
+    @SoPhieuX CHAR(10)
+AS
+BEGIN
+    SELECT * FROM ChiTietPhieuX
+    WHERE SoPhieuX = @SoPhieuX
+END
+
 
 
 
