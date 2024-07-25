@@ -70,9 +70,10 @@ CREATE TABLE VatTu (
 -- TẠO BẢNG TỒN KHO
 CREATE TABLE TonKho (
     MaVT CHAR(10) NOT NULL,
-    NamThang DATE,
+    NamThang DATE NOT NULL,
     SoLuongTon INT,
     MaKho CHAR(10),
+	PRIMARY KEY (MaVT,NamThang),
     FOREIGN KEY (MaVT) REFERENCES VatTu(MaVT),
     FOREIGN KEY (MaKho) REFERENCES KHO(MaKho)
 );
@@ -113,10 +114,11 @@ CREATE TABLE PhieuNhap (
 
 -- TẠO BẢNG CHI TIẾT PHIẾU NHẬP
 CREATE TABLE ChiTietPhieuN (
-    SoPhieuN CHAR(10) PRIMARY KEY,
-    MaVT CHAR(10),
+    SoPhieuN CHAR(10) NOT NULL,
+    MaVT CHAR(10) NOT NULL,
     SoLuongN INT CHECK(SoLuongN > 0),
     DonGiaN DECIMAL(18, 2) CHECK(DonGiaN > 0),
+	PRIMARY KEY (SoPhieuN,MaVT),
     FOREIGN KEY (SoPhieuN) REFERENCES PhieuNhap(SoPhieuN),
     FOREIGN KEY (MaVT) REFERENCES VatTu(MaVT)
 );
@@ -135,10 +137,11 @@ CREATE TABLE PhieuXuat (
 
 -- TẠO BẢNG CHI TIẾT PHIẾU XUẤT
 CREATE TABLE ChiTietPhieuX (
-    SoPhieuX CHAR(10) PRIMARY KEY,
-    MaVT CHAR(10),
+    SoPhieuX CHAR(10) NOT NULL,
+    MaVT CHAR(10) NOT NULL,
     SoLuongX INT CHECK(SoLuongX > 0),
     DonGiaX DECIMAL(18, 2) CHECK(DonGiaX > 0),
+	PRIMARY KEY (SoPhieuX,MaVT),
     FOREIGN KEY (SoPhieuX) REFERENCES PhieuXuat(SoPhieuX),
     FOREIGN KEY (MaVT) REFERENCES VatTu(MaVT)
 );
