@@ -954,6 +954,18 @@ END
 
 EXEC XoaNhanVien @MaNV = 'NV011'
 
+--Người viết : Bùi Chí Nhật
+--Ngày viết : 22/7/2024
+--Lấy dữ liệu nhân viên
+CREATE PROCEDURE LayTTNhanVien
+    @MaNV CHAR(10)
+AS
+BEGIN
+    SELECT *
+    FROM NhanVien
+    WHERE MaNV = @MaNV
+END
+
 
 --Người viết : Bùi Chí Nhật
 --Ngày viết : 22/7/2024
@@ -1020,14 +1032,15 @@ EXEC XoaNV_SDT @MaNV = 'NV001';
 CREATE PROCEDURE ThemKho
     @MaKho Char(10) ,
     @TenKho NVARCHAR(100),
-    @DiaDiem NVARCHAR(200)
+    @DiaDiem NVARCHAR(200),
+    @ChiNhanh VARCHAR(10)
 AS
 BEGIN
-    INSERT INTO KHO([MaKho],[TenKho],[DiaDiem])
-    VALUES(@MaKho,@TenKho,@DiaDiem)
+    INSERT INTO KHO([MaKho],[TenKho],[DiaDiem],[ChiNhanh])
+    VALUES(@MaKho,@TenKho,@DiaDiem,@ChiNhanh)
 END
 
-EXEC ThemKho @MaKho = 'K011', @TenKho = N'Kho A', @DiaDiem = N'123 ABC Street';
+EXEC ThemKho @MaKho = 'K011', @TenKho = N'Kho A', @DiaDiem = N'123 ABC Street',@ChiNhanh = 'CN1' ;
 
 
 --Người viết : Bùi Chí Nhật
@@ -1036,15 +1049,16 @@ EXEC ThemKho @MaKho = 'K011', @TenKho = N'Kho A', @DiaDiem = N'123 ABC Street';
 CREATE PROCEDURE SuaKho
     @MaKho CHAR(10),
     @TenKho NVARCHAR(100),
-    @DiaDiem NVARCHAR(200)
+    @DiaDiem NVARCHAR(200),
+    @ChiNhanh VARCHAR(10)
 AS
 BEGIN
     UPDATE KHO
-    SET MaKho = @MaKho, TenKho = @TenKho, DiaDiem =@DiaDiem 
+    SET MaKho = @MaKho, TenKho = @TenKho, DiaDiem =@DiaDiem ,ChiNhanh = @ChiNhanh
     WHERE MaKho = @MaKho
 END
 
-EXEC SuaKho @MaKho = 'K011', @TenKho = N'Kho F', @DiaDiem = N'123 ABC Street';
+EXEC SuaKho @MaKho = 'K011', @TenKho = N'Kho F', @DiaDiem = N'123 ABC Street',@ChiNhanh = 'CN1' ;
 
 
 
@@ -1470,7 +1484,6 @@ BEGIN
 END
 
 EXEC LayThongTinChiTietPhieuX @SoPhieuX = 'PX001';
-
 
 
 
