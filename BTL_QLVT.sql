@@ -404,7 +404,7 @@ SELECT * FROM vw_soluongnhapkho
 
 -- hiển thị tồn kho hiện tại của mỗi vật tư trong từng kho-Lê Hoàng Phong-15/07/2024
 
-ALTER VIEW vw_Tonkhovattu AS
+CREATE VIEW vw_Tonkhovattu AS
 SELECT VT.MaVT,VT.TenVT,SUM(TK.SoLuongTon) AS Ton_Kho,TK.MaKho
 FROM TonKho TK JOIN VatTu VT ON
 	 TK.MaVT=VT.MaVT
@@ -511,7 +511,7 @@ AS
 
 CREATE TRIGGER tr_Nhanvien_Gioitinh
 ON [dbo].[NhanVien]
-FOR INSERT,UPDATE
+FOR INSERT
 AS
 	BEGIN
 		DECLARE @GT CHAR(10)
@@ -547,7 +547,7 @@ AS
 	END
 
 INSERT INTO [dbo].[ChiTietPhieuN] ([SoPhieuN],[MaVT],[SoLuongN],[DonGiaN]) 
-VALUES ('PN012','VT002',77,500000)
+VALUES ('PN010','VT002',77,500000)
 
 --đồng bộ số lượng tồn kho khi xuất-Lê Hoàng Phong-16/07/2024
 
@@ -574,30 +574,32 @@ AS
 INSERT INTO [dbo].[ChiTietPhieuX] (SoPhieuX,MaVT,SoLuongX,DonGiaX)
 VALUES('PX012','VT002',34,546000)
 
--- kiểm tra cập nhật mã nhân viên trong bảng phiếu nhập-Lê Hoàng Phong-16/07/2024
+-- kiểm tra mã nhân viên trong bảng phiếu nhập - Lê Hoàng Phong - 16/07/2024
 
 CREATE TRIGGER trg_Phieunhap_Manv
 ON [dbo].[PhieuNhap]
-FOR UPDATE
+INSTEAD OF INSERT
 AS
-BEGIN
-    IF UPDATE(MaNV)
-    BEGIN
-        DECLARE @MaNV CHAR(10)
-        SELECT @MaNV = inserted.MaNV FROM inserted
-        IF NOT EXISTS (SELECT 1 FROM [dbo].[NhanVien] WHERE MaNV = @MaNV)
-        BEGIN
-            RAISERROR('Mã nhân viên không tồn tại', 16, 1)
-            ROLLBACK TRANSACTION
-        END
-    END
+BEGIN 
+	DECLARE @MaNV CHAR(10)
+	SELECT @MaNV=MaNV FROM inserted
+        IF NOT EXISTS (
+						SELECT 1
+						FROM [dbo].[NhanVien]
+						WHERE [MaNV] = @MaNV)
+			BEGIN
+				RAISERROR('Mã nhân viên không tồn tại trong bảng NhanVien.', 16, 1)
+				ROLLBACK TRANSACTION
+			END
 END
+INSERT INTO [dbo].[PhieuNhap]
+VALUES ('PN012','2024-8-9','NG006','NV011','K007')
 
 --kiểm tra cập nhật mã nhân viên trong bảng phiếu xuất-Lê Hoàng Phong-16/07/2024
 
 CREATE TRIGGER trg_Phieuxuat_Manv
 ON [dbo].[PhieuXuat]
-FOR UPDATE
+INSTEAD OF UPDATE
 AS
 BEGIN
     IF UPDATE(MaNV)
@@ -690,7 +692,7 @@ BEGIN
 END
 
 DELETE FROM [dbo].[NhanVien]
-WHERE MaNV='NV005'
+WHERE MaNV='NV004'
 
 -- Tự đông cập nhật ngày vào làm cho nhân viên mới-Lê Hoàng Phong-16/07/2024
 
@@ -1377,6 +1379,7 @@ BEGIN
     SELECT * FROM ChiTietPhieuX
     WHERE SoPhieuX = @SoPhieuX
 END
+
 
 
 
