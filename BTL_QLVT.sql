@@ -714,13 +714,15 @@ VALUES('NV012','Bui Chi N','Nam','Ha Noi','CV010','K004')
 --Thêm loại vật tư 
 CREATE PROCEDURE ThemLoaiVatTu
     @MaLoaiVT CHAR(10),
-    @TenLoaiVT NVARCHAR(50)
+    @TenLoaiVT NVARCHAR(50),
+    @MoTa NVARCHAR(200)
 AS
 BEGIN
-    INSERT INTO LoaiVatTu ([MaLoaiVT],[LoaiVT])
-    VALUES (@MaLoaiVT, @TenLoaiVT)
+    INSERT INTO LoaiVatTu ([MaLoaiVT],[LoaiVT],[Mota])
+    VALUES (@MaLoaiVT, @TenLoaiVT ,@MoTa)
 END
 
+EXEC ThemLoaiVatTu 'LVT012', N'Loại H', N'Mô tả H'
 
 
 --Người viết : Bùi Chí Nhật
@@ -739,6 +741,8 @@ BEGIN
     WHERE [MaLoaiVT] = @MaLoaiVT 
 END
 
+EXEC SuaLoaiVatTu 'LVT012', N'Loại K', N'Mô tả K'
+
 
 
 --Người viết : Bùi Chí Nhật
@@ -752,6 +756,8 @@ BEGIN
     FROM LoaiVatTu 
     WHERE MaLoaiVT = @MaLoaiVT
 END
+
+EXEC XoaLoaiVatTu 'LVT012'
 
 
 
@@ -782,6 +788,8 @@ BEGIN
     VALUES (@MaVT, @TenVT, @DonViTinh, @MaLoaiVT);
 END
 
+EXEC ThemVatTu @MaVT = 'VT011', @TenVT = N'Vật tư K', @DonViTinh = N'Cái', @MaLoaiVT = 'LVT001';
+
 
 --Người viết : Bùi Chí Nhật
 --Ngày viết : 22/7/2024
@@ -799,6 +807,8 @@ BEGIN
     WHERE MaVT = @MaVT;
 END
 
+EXEC SuaVatTu @MaVT = 'VT001', @TenVT = N'Vật tư A Updated', @DonViTinh = N'Cái', @SoLuong = 110, @MaLoaiVT = 'LVT001';
+
 
 --Người viết : Bùi Chí Nhật
 --Ngày viết : 22/7/2024
@@ -812,6 +822,7 @@ BEGIN
     WHERE MaVT = @MaVT;
 END
 
+EXEC XoaVatTu @MaVT = 'VT011';
 
 
 --Người viết : Bùi Chí Nhật
@@ -824,6 +835,8 @@ BEGIN
     SELECT * FROM VatTu
     WHERE MaVT = @MaVT;
 END
+
+EXEC LayVatTu @MaVT = 'VT001'
 
 
 --Người viết : Bùi Chí Nhật
@@ -839,6 +852,8 @@ BEGIN
     INSERT INTO Luong (MaCV, TenCV, HSL, LuongCB)
     VALUES (@MaCV, @TenCV, @HSL, @LuongCB);
 END
+
+EXEC ThemLuong @MaCV = 'CV0011', @TenCV = N'Chức vụ F', @HSL = 3.5, @LuongCB = 6000000
 
 
 --Người viết : Bùi Chí Nhật
@@ -856,6 +871,9 @@ BEGIN
     WHERE MaCV = @MaCV;
 END
 
+EXEC SuaLuong @MaCV = 'CV001', @TenCV = N'Chức vụ A', @HSL = 3.5, @LuongCB = 6000000
+
+
 --Người viết : Bùi Chí Nhật
 --Ngày viết : 22/7/2024
 --Xóa lương
@@ -868,6 +886,9 @@ BEGIN
     WHERE [MaCV] = @MaCV 
 END
 
+EXEC XoaLuong @MaCV = 'CV001'
+
+
 --Người viết : Bùi Chí Nhật
 --Ngày viết : 22/7/2024
 --Lấy thông tin lương
@@ -879,6 +900,8 @@ BEGIN
     FROM [dbo].[Luong]
     WHERE MaCV = @MaCV 
 END
+
+EXEC LayThongTinLuong @MaCV = 'CV001';
 
 
 --Người viết : Bùi Chí Nhật
@@ -897,6 +920,9 @@ BEGIN
     INSERT INTO NhanVien (MaNV, TenNV, GioiTinh, DiaChi, NgayVaoLam, MaCV ,MaKho)
     VALUES (@MaNV, @TenNV, @GioiTinh, @DiaChi, @NgayVaoLam, @MaCV,@MaKho)
 END
+
+EXEC ThemNhanVien @MaNV = 'NV011', @TenNV = N'Nguyễn Văn A', @GioiTinh = 'Nam', @DiaChi = N'123 ABC Street', @NgayVaoLam = '2024-07-22', @MaCV = 'CV001', @MaKho = 'K003';
+
 
 
 --Người viết : Bùi Chí Nhật
@@ -917,6 +943,8 @@ BEGIN
     WHERE [MaNV] =  @MaNV 
 END
 
+EXEC SuaNhanVien @MaNV = 'NV011', @TenNV = N'Nguyễn Văn L', @GioiTinh = 'Nam', @DiaChi = N'123 ABC Street', @NgayVaoLam = '2024-07-22', @MaCV = 'CV001', @MaKho = 'K003';
+
 
 --Người viết : Bùi Chí Nhật
 --Ngày viết : 22/7/2024
@@ -926,6 +954,20 @@ CREATE PROCEDURE XoaNhanVien
 AS
 BEGIN
     DELETE FROM NhanVien
+    WHERE MaNV = @MaNV
+END
+
+EXEC XoaNhanVien @MaNV = 'NV011'
+
+--Người viết : Bùi Chí Nhật
+--Ngày viết : 22/7/2024
+--Lấy dữ liệu nhân viên
+CREATE PROCEDURE LayTTNhanVien
+    @MaNV CHAR(10)
+AS
+BEGIN
+    SELECT *
+    FROM NhanVien
     WHERE MaNV = @MaNV
 END
 
@@ -942,6 +984,8 @@ BEGIN
     VALUES(@MaNV,@SDT)
 END
 
+EXEC ThemNV_SDT 'NV001', '0123456789';
+
 
 --Người viết : Bùi Chí Nhật
 --Ngày viết : 22/7/2024
@@ -956,6 +1000,8 @@ BEGIN
     WHERE MaNV = @MaNV 
 END
 
+EXEC SuaNV_SDT 'NV002', '0123556789'
+
 
 --Người viết : Bùi Chí Nhật
 --Ngày viết : 22/7/2024
@@ -967,6 +1013,8 @@ BEGIN
     SELECT * FROM [dbo].[NhanVien_SDT]
     WHERE MaNV = @MaNV
 END
+
+EXEC LayTTNV_SDT @MaNV = 'NV001';
 
 
 --Người viết : Bùi Chí Nhật
@@ -980,18 +1028,25 @@ BEGIN
     WHERE MaNV = @MaNV
 END
 
+EXEC XoaNV_SDT @MaNV = 'NV001';
+
+
 --Người viết : Bùi Chí Nhật
 --Ngày viết : 24/7/2024
 --Thêm dữ liệu kho
 CREATE PROCEDURE ThemKho
     @MaKho Char(10) ,
     @TenKho NVARCHAR(100),
-    @DiaDiem NVARCHAR(200)
+    @DiaDiem NVARCHAR(200),
+    @ChiNhanh VARCHAR(10)
 AS
 BEGIN
-    INSERT INTO KHO([MaKho],[TenKho],[DiaDiem])
-    VALUES(@MaKho,@TenKho,@DiaDiem)
+    INSERT INTO KHO([MaKho],[TenKho],[DiaDiem],[ChiNhanh])
+    VALUES(@MaKho,@TenKho,@DiaDiem,@ChiNhanh)
 END
+
+EXEC ThemKho @MaKho = 'K011', @TenKho = N'Kho A', @DiaDiem = N'123 ABC Street',@ChiNhanh = 'CN1' ;
+
 
 --Người viết : Bùi Chí Nhật
 --Ngày viết : 24/7/2024
@@ -999,13 +1054,18 @@ END
 CREATE PROCEDURE SuaKho
     @MaKho CHAR(10),
     @TenKho NVARCHAR(100),
-    @DiaDiem NVARCHAR(200)
+    @DiaDiem NVARCHAR(200),
+    @ChiNhanh VARCHAR(10)
 AS
 BEGIN
     UPDATE KHO
-    SET MaKho = @MaKho, TenKho = @TenKho, DiaDiem =@DiaDiem 
+    SET MaKho = @MaKho, TenKho = @TenKho, DiaDiem =@DiaDiem ,ChiNhanh = @ChiNhanh
     WHERE MaKho = @MaKho
 END
+
+EXEC SuaKho @MaKho = 'K011', @TenKho = N'Kho F', @DiaDiem = N'123 ABC Street',@ChiNhanh = 'CN1' ;
+
+
 
 --Người viết : Bùi Chí Nhật
 --Ngày viết : 24/7/2024
@@ -1017,6 +1077,8 @@ BEGIN
     DELETE FROM KHO
     WHERE MaKho = @MaKho
 END
+
+EXEC XoaKho 'K011'
 
 
 --Người viết : Bùi Chí Nhật
@@ -1030,6 +1092,8 @@ BEGIN
     FROM KHO
     WHERE MaKho = @MaKho;
 END
+
+EXEC LayTTKho 'K001'
 
 
 --Người viết : Bùi Chí Nhật
@@ -1045,6 +1109,8 @@ BEGIN
     INSERT INTO TonKho ([MaVT],[NamThang],[SoLuongTon],[MaKho])
     VALUES (@MaVT, @NamThang, @SoLuongTon,@MaKho)
 END
+
+EXEC ThemTonKho @MaVT = 'VT001', @NamThang = '2024-07-24', @SoLuongTon = 100, @MaKho = 'K001';
 
 
 --Người viết : Bùi Chí Nhật
@@ -1062,6 +1128,8 @@ BEGIN
     WHERE MaKho = @MaKho AND MaVT = @MaVT;
 END
 
+EXEC SuaTonKho @MaVT = 'VT001', @NamThang = '2024-07-24', @SoLuongTon = 105, @MaKho = 'K001';
+
 
 --Người viết : Bùi Chí Nhật
 --Ngày viết : 24/7/2024
@@ -1075,6 +1143,7 @@ BEGIN
     WHERE MaKho = @MaKho AND MaVT = @MaVT;
 END
 
+EXEC XoaTonKho 'K001' , 'VT001'
 
 
 --Người viết : Bùi Chí Nhật
@@ -1088,6 +1157,8 @@ BEGIN
     SELECT * FROM TonKho
     WHERE MaKho = @MaKho AND MaVT = @MaVT;
 END
+
+EXEC LayTTTonKho 'K001' , 'VT001'
 
 
 --Người viết : Bùi Chí Nhật
@@ -1103,6 +1174,8 @@ BEGIN
     INSERT INTO NhaCungCap (MaNCC, TenNCC, SDT, DiaChi)
     VALUES (@MaNCC, @TenNCC, @SDT, @DiaChi)
 END
+
+EXEC ThemNhaCungCap @MaNCC = 'NCC011', @TenNCC = N'Nhà cung cấp A', @DiaChi = N'789 GHI Street', @SDT = '0123456789';
 
 
 --Người viết : Bùi Chí Nhật
@@ -1120,6 +1193,8 @@ BEGIN
     WHERE [MaNCC] = @MaNCC 
 END
 
+EXEC SuaNhaCungCap @MaNCC = 'NCC011', @TenNCC = N'Nhà cung cấp B', @DiaChi = N'101 JKL Street', @SDT = '0987654321';
+
 
 --Người viết : Bùi Chí Nhật
 --Ngày viết : 24/7/2024
@@ -1133,6 +1208,8 @@ BEGIN
     WHERE [MaNCC] = @MaNCC 
 END
 
+EXEC XoaNhaCungCap @MaNCC = 'NCC011';
+
 
 --Người viết : Bùi Chí Nhật
 --Ngày viết : 24/7/2024
@@ -1144,6 +1221,8 @@ BEGIN
     SELECT * FROM NhaCungCap
     WHERE MaNCC = @MaNCC
 END
+
+EXEC LayTTNhaCungCap @MaNCC = 'NCC001';
 
 
 --Người viết : Bùi Chí Nhật
@@ -1161,11 +1240,13 @@ BEGIN
     VALUES (@SoPhieuN, @NgayNhap, @MaNG, @MaNV, @MaKho)
 END
 
+EXEC ThemPhieuNhap @SoPhieuN = 'PN011', @NgayNhap = '2024-07-24', @MaNG = 'NG001', @MaNV = 'NV001', @MaKho = 'K001';
+
 
 --Người viết : Bùi Chí Nhật
 --Ngày viết : 24/7/2024
 --Sửa dữ liệu phiếu nhập
-CREATE PROCEDURE CapNhatPhieuNhap
+CREATE PROCEDURE SuaPhieuNhap
     @SoPhieuN CHAR(10),
     @NgayNhap DATE,
     @MaNG CHAR(10),
@@ -1181,6 +1262,8 @@ BEGIN
     WHERE SoPhieuN = @SoPhieuN
 END
 
+EXEC SuaPhieuNhap @SoPhieuN = 'PN011', @NgayNhap = '2024-07-24', @MaNG = 'NG003', @MaNV = 'NV002', @MaKho = 'K001';
+
 
 --Người viết : Bùi Chí Nhật
 --Ngày viết : 24/7/2024
@@ -1193,6 +1276,8 @@ BEGIN
     WHERE SoPhieuN = @SoPhieuN
 END
 
+EXEC XoaPhieuNhap @SoPhieuN = 'PN011';
+
 
 --Người viết : Bùi Chí Nhật
 --Ngày viết : 24/7/2024
@@ -1204,6 +1289,8 @@ BEGIN
     SELECT * FROM PhieuNhap
     WHERE SoPhieuN = @SoPhieuN
 END
+
+EXEC LayThongTinPhieuNhap @SoPhieuN = 'PN001';
 
 
 --Người viết : Bùi Chí Nhật
@@ -1219,6 +1306,8 @@ BEGIN
     INSERT INTO ChiTietPhieuN (SoPhieuN, MaVT, SoLuongN, DonGiaN)
     VALUES (@SoPhieuN, @MaVT, @SoLuongN, @DonGiaN)
 END
+
+EXEC ThemChiTietPhieuN 'PN011','VT002',50,100000
 
 
 --Người viết : Bùi Chí Nhật
@@ -1238,6 +1327,9 @@ BEGIN
     WHERE SoPhieuN = @SoPhieuN
 END
 
+EXEC SuaChiTietPhieuN @SoPhieuN = 'PN001', @MaVT = 'VT005', @SoLuongN = 50, @DonGiaN = 100000;
+
+
 
 --Người viết : Bùi Chí Nhật
 --Ngày viết : 24/7/2024
@@ -1250,6 +1342,7 @@ BEGIN
     WHERE SoPhieuN = @SoPhieuN
 END
 
+EXEC XoaChiTietPhieuN @SoPhieuN = 'PN001'
 
 --Người viết : Bùi Chí Nhật
 --Ngày viết : 24/7/2024
@@ -1261,6 +1354,8 @@ BEGIN
     SELECT * FROM ChiTietPhieuN
     WHERE SoPhieuN = @SoPhieuN
 END
+
+EXEC LayThongTinChiTietPhieuN @SoPhieuN = 'PN001'
 
 
 --Người viết : Bùi Chí Nhật
@@ -1277,6 +1372,8 @@ BEGIN
     INSERT INTO PhieuXuat (SoPhieuX, NgayXuat, MaNN, MaNV, MaKho)
     VALUES (@SoPhieuX, @NgayXuat, @MaNN, @MaNV, @MaKho)
 END
+
+EXEC ThemPhieuXuat @SoPhieuX = 'PX001', @NgayXuat = '2024-07-24', @MaNN = 'NN001', @MaNV = 'NV001', @MaKho = 'KHO001';
 
 
 --Người viết : Bùi Chí Nhật
@@ -1298,6 +1395,8 @@ BEGIN
     WHERE SoPhieuX = @SoPhieuX
 END
 
+EXEC SuaPhieuXuat @SoPhieuX = 'PX001', @NgayXuat = '2024-07-25', @MaNN = 'NN001', @MaNV = 'NV002', @MaKho = 'K002';
+
 
 --Người viết : Bùi Chí Nhật
 --Ngày viết : 24/7/2024
@@ -1310,6 +1409,8 @@ BEGIN
     WHERE SoPhieuX = @SoPhieuX;
 END
 
+EXEC XoaPhieuXuat @SoPhieuX = 'PX001';
+
 
 --Người viết : Bùi Chí Nhật
 --Ngày viết : 24/7/2024
@@ -1321,6 +1422,8 @@ BEGIN
     SELECT * FROM PhieuXuat
     WHERE SoPhieuX = @SoPhieuX;
 END
+
+EXEC LayThongTinPhieuXuat @SoPhieuX = 'PX001';
 
 
 --Người viết : Bùi Chí Nhật
@@ -1336,6 +1439,8 @@ BEGIN
     INSERT INTO ChiTietPhieuX (SoPhieuX, MaVT, SoLuongX, DonGiaX)
     VALUES (@SoPhieuX, @MaVT, @SoLuongX, @DonGiaX)
 END
+
+EXEC ThemChiTietPhieuX @SoPhieuX = 'PX001', @MaVT = 'VT001', @SoLuongX = 40, @DonGiaX = 120000;
 
 
 --Người viết : Bùi Chí Nhật
@@ -1355,6 +1460,8 @@ BEGIN
     WHERE SoPhieuX = @SoPhieuX
 END
 
+EXEC SuaChiTietPhieuX @SoPhieuX = 'PX001', @MaVT = 'VT002', @SoLuongX = 45, @DonGiaX = 130000;
+
 
 --Người viết : Bùi Chí Nhật
 --Ngày viết : 24/7/2024
@@ -1367,6 +1474,7 @@ BEGIN
     WHERE SoPhieuX = @SoPhieuX
 END
 
+EXEC XoaChiTietPhieuX @SoPhieuX = 'PX001';
 
 
 --Người viết : Bùi Chí Nhật
@@ -1380,6 +1488,7 @@ BEGIN
     WHERE SoPhieuX = @SoPhieuX
 END
 
+EXEC LayThongTinChiTietPhieuX @SoPhieuX = 'PX001';
 
 
 
